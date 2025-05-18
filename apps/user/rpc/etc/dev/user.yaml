@@ -1,0 +1,7 @@
+Name: user.rpc
+ListenOn: 0.0.0.0:10000
+Etcd:
+  Hosts:
+  # 自己本地的网络ip:端口
+  - 192.168.50.8:3379
+  Key: user.rpc

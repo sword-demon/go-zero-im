@@ -1,0 +1,13 @@
+.idea
+
+*.bak
+*~
+
+go.work
+go.work.sum
+
+*.log
+
+/bin
+
+/components
