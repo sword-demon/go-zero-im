@@ -11,3 +11,5 @@ go.work.sum
 /bin
 
 /components
+
+go.sum
