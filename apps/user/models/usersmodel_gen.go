@@ -30,6 +30,7 @@ type (
 	usersModel interface {
 		Insert(ctx context.Context, data *Users) (sql.Result, error)
 		FindOne(ctx context.Context, id string) (*Users, error)
+		FindByPhone(ctx context.Context, phone string) (*Users, error)
 		Update(ctx context.Context, data *Users) error
 		Delete(ctx context.Context, id string) error
 	}
@@ -74,6 +75,23 @@ func (m *defaultUsersModel) FindOne(ctx context.Context, id string) (*Users, err
 	err := m.QueryRowCtx(ctx, &resp, usersIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
 		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", usersRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, id)
+	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultUsersModel) FindByPhone(ctx context.Context, phone string) (*Users, error) {
+	usersIdKey := fmt.Sprintf("%s%v", cacheUsersIdPrefix, phone)
+	var resp Users
+	err := m.QueryRowCtx(ctx, &resp, usersIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where `phone` = ? limit 1", usersRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, phone)
 	})
 	switch err {
 	case nil:
