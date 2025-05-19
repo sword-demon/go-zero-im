@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"github.com/jinzhu/copier"
+	"github.com/sword-demon/go-zero-im/apps/user/models"
 
 	"github.com/sword-demon/go-zero-im/apps/user/rpc/internal/svc"
 	"github.com/sword-demon/go-zero-im/apps/user/rpc/user"
@@ -24,7 +26,30 @@ func NewFindUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FindUser
 }
 
 func (l *FindUserLogic) FindUser(in *user.FindUserReq) (*user.FindUserResp, error) {
-	// todo: add your logic here and delete this line
+	var (
+		userEntities []*models.Users
+		err          error
+	)
 
-	return &user.FindUserResp{}, nil
+	if in.Phone != "" {
+		userEntity, err := l.svcCtx.UsersModel.FindByPhone(l.ctx, in.Phone)
+		if err != nil {
+			userEntities = append(userEntities, userEntity)
+		}
+	} else if in.Name != "" {
+		userEntities, err = l.svcCtx.UsersModel.ListByName(l.ctx, in.Name)
+	} else if len(in.Ids) > 0 {
+		userEntities, err = l.svcCtx.UsersModel.ListByIds(l.ctx, in.Ids)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	var resp []*user.UserEntity
+	copier.Copy(&resp, &userEntities)
+
+	return &user.FindUserResp{
+		User: resp,
+	}, nil
 }
