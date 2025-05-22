@@ -38,7 +38,7 @@ func (l *LoginLogic) Login(in *user.LoginReq) (*user.LoginResp, error) {
 	// 1. 根据手机号码查询用户是否存在
 	userEntity, err := l.svcCtx.UsersModel.FindByPhone(l.ctx, in.Phone)
 	if err != nil {
-		if !errors.Is(err, models.ErrNotFound) {
+		if errors.Is(err, models.ErrNotFound) {
 			return nil, errors.WithStack(ErrPhoneNotRegister)
 		}
 		return nil, errors.Wrapf(xerr.NewDBErr(), "find user by phone err %v, req %v", err, in)

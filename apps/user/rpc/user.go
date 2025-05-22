@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/sword-demon/go-zero-im/pkg/interceptor/rpcserver"
 
 	"github.com/sword-demon/go-zero-im/apps/user/rpc/internal/config"
 	"github.com/sword-demon/go-zero-im/apps/user/rpc/internal/server"
@@ -32,6 +33,9 @@ func main() {
 			reflection.Register(grpcServer)
 		}
 	})
+
+	// 注册日志拦截器
+	s.AddUnaryInterceptors(rpcserver.LogInterceptor)
 	defer s.Stop()
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
