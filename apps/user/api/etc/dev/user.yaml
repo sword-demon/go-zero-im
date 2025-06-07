@@ -1,0 +1,15 @@
+Name: user
+Host: 0.0.0.0
+Port: 8888
+
+UserRpc:
+  Etcd:
+    Hosts:
+      # 自己本地的网络ip:端口
+      - 192.168.50.8:3379
+    Key: user.rpc
+
+JwtAuth:
+  # 密钥，自己随便瞎写
+  AccessSecret: wujiedeyouxi
+  AccessExpire: 8640000 # 100 天后过期
