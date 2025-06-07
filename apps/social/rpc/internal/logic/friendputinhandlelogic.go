@@ -24,7 +24,10 @@ func NewFriendPutInHandleLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *FriendPutInHandleLogic) FriendPutInHandle(in *social.FriendPutInHandleReq) (*social.FriendPutInHandleResp, error) {
-	// todo: add your logic here and delete this line
+	// 获取好有申请记录
+	// 验证是否有处理
+	// 修改申请结果 > 通过[建立两条好友关系记录] -> 事务
+	// 修改申请结果 > 拒绝[删除申请记录] -> 事务
 
 	return &social.FriendPutInHandleResp{}, nil
 }

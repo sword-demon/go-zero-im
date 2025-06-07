@@ -31,6 +31,7 @@ type (
 	friendRequestsModel interface {
 		Insert(ctx context.Context, data *FriendRequests) (sql.Result, error)
 		FindOne(ctx context.Context, id uint64) (*FriendRequests, error)
+		FindByReqUidAndUserId(ctx context.Context, rid, uid string) (*FriendRequests, error)
 		Update(ctx context.Context, data *FriendRequests) error
 		Delete(ctx context.Context, id uint64) error
 	}
@@ -75,6 +76,20 @@ func (m *defaultFriendRequestsModel) FindOne(ctx context.Context, id uint64) (*F
 		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", friendRequestsRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, id)
 	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultFriendRequestsModel) FindByReqUidAndUserId(ctx context.Context, rid, uid string) (*FriendRequests, error) {
+	query := fmt.Sprintf("select %s from %s where `req_uid` = ? and `user_id` = ?", friendRequestsRows, m.table)
+	var resp FriendRequests
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, rid, uid)
 	switch err {
 	case nil:
 		return &resp, nil
